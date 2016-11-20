@@ -125,23 +125,23 @@
    }
 
 
-
-        
-    var socket = io.connect();
-        
-    socket.on('canvas', function(platformArr){
-       
-        theContext.clearRect(0,0,500,300);
-        
-        for(var i=0;i<platformArr.length;i++){
-            var thisPlatform=platformArr[i];
-            drawPlatform(thisPlatform);
-            console.log('>>>>', i, thisPlatform);
-        }
-        
-    socket.emit('movement', init)
-        
-    });
+//
+//        
+//    var socket = io.connect();
+//        
+//    socket.on('canvas', function(platformArr){
+//       
+//        theContext.clearRect(0,0,500,300);
+//        
+//        for(var i=0;i<platformArr.length;i++){
+//            var thisPlatform=platformArr[i];
+//            drawPlatform(thisPlatform);
+//            console.log('>>>>', i, thisPlatform);
+//        }
+//        
+//    socket.emit('movement', init)
+//        
+//    });
   
     
       
