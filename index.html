@@ -64,10 +64,6 @@
         
     var x = (canvasWidth/100)*25;  // houdt de veranderende horizontale positie bij
     var y = (canvasHeight/2);  // houd de veranderende verticale positie bij
-    var frameTeller = 0;
-    var stapX = 0//(canvasWidth/100)*1;    // De X-as snelheid (in frames) per seconde
-    var stapY = 0//(canvasWidth/100)*1;    // De Y-as snelheid (in frames) per seconde
-    var straal = 10;  // De straal van de bal
     var hoogtePlatform = (canvasHeight/100)*15;   // De hoogte van de platform (in pixels)
     // var platform1X = (canvasWidth/100)*5    // Beginpositie X-as platform links
     var platform1Y    // Beginpositie Y-as (niet ingesteld)
@@ -79,19 +75,7 @@
     var bovenkantPlatform2
     //-------------------------------------------------------------------------------//
     var breedtePlatform = (canvasWidth/100)*15;   // De breedte van de platform (in pixels)
-    var platform3X    // Beginpositie X-as platform rechts
-    var platform3Y     // Beginpositie Y-as platform rechts
-    var onderkantPlatform3
-    var bovenkantPlatform3
-    var platform4X    // Beginpositie X-as platform rechts
-    var platform4Y     // Beginpositie Y-as platform rechts
-    var onderkantPlatform4
-    var bovenkantPlatform4
-    //-------------------------------------------------------------------------------//
-    var hitCounter = 0   // Variable die bijhoud hoe vaak de bal op het platform komt
-    var speler1Count = 0    // Variable die bijhoud hoe veel punten speler 1 heeft
-    var speler2Count = 0    // Variable die bijhoud hoe veel punten speler 2 heeft
-    var beginCount = 0
+ 
 
    
     function init(){
@@ -118,7 +102,7 @@
         
     }    
         
-    var socket = io();
+    var socket = io.connect();
         
     socket.on('canvas', function(ballArr){
        
@@ -129,6 +113,7 @@
             init(thisBall);
             console.log('>>>>', i, thisBall);
         }
+    socket.emit('movement', init)
         
     });
   
