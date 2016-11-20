@@ -1,6 +1,8 @@
 <doctype HTML></doctype>
 <html>
-<head></head>
+<head>
+<script type ="text/javascript" src="server.js"></script>
+</head>
 
 <style>
     html, body {
@@ -13,13 +15,6 @@
         border: 5px solid black;
         background-color: black;
     }
-    #balkRechts{
-   -webkit-transition: all;
-   transition: all;
-   position:absolute;
-   width:10px;
-   background: #fff;
-}
 #balkLinks{
    -webkit-transition: all;
    transition: all;
@@ -29,7 +24,7 @@
 }
 </style>
 
-<body>
+<body onload='init()'>
     <canvas id="mijnCanvasje" width="500" height="500" style="1px solid black"></canvas>
     <div id="balkLinks"></div>
     <div id="balkRechts"></div>
@@ -49,24 +44,24 @@
        } )(); 
    }
    
-
-   function drawPlatform1(x, y) {   // Tekent het platform links
-      theContext.beginPath();
-      theContext.rect(platform1X, platform1Y, 10, hoogtePlatform)
-      theContext.closePath();
-      theContext.fill();
-      theContext.stroke();
-   }
-
- 
-   function startDrawing(canvasId) {
+    function startDrawing(canvasId) {
       var canvasElement = document.getElementById(canvasId);
       var drawingContext = canvasElement.getContext("2d");
       return drawingContext;
    }
  
-   var theContext = startDrawing("mijnCanvasje")
- 
+    var theContext = startDrawing("mijnCanvasje")
+
+    var canvasWidth = window.innerWidth
+    var canvasHeight = window.innerHeight
+    var theContext = startDrawing("mijnCanvasje")
+    window.addEventListener('resize', resizeCanvas, false)
+    function resizeCanvas() {
+      mijnCanvasje.width = canvasWidth
+      mijnCanvasje.height = canvasHeight
+    }
+    resizeCanvas();
+        
    var x = 100;  // houdt de veranderende horizontale positie bij
    var y = 100;  // houd de veranderende verticale positie bij
    var frameTeller = 0;
@@ -82,19 +77,20 @@
    var platform2Y     // Beginpositie Y-as platform rechts
    var onderkantPlatform2
    var bovenkantPlatform2
-   var hitCounter = 0   // Variable die bijhoud hoe vaak de bal op het platform komt
-   var speler1Count = 0    // Variable die bijhoud hoe veel punten speler 1 heeft
-   var speler2Count = 0    // Variable die bijhoud hoe veel punten speler 2 heeft
     
-   setInterval( maakSpel, 40 )   // 40 frames per seconde
+   function drawPlatform(thisPlatform) {   // Tekent het platform links
+        theContext.beginPath();
+        theContext.rect(100, 100, 10, 75)
+        theContext.closePath();
+        theContext.fill();
+        theContext.fillStyle='white';
+   }
    
-   var cursorX
-   var cursorY
 
    function init(){
       balk = document.getElementById("balkLinks");
-      w = 500;
-      h = 300;
+      w = canvasWidth;
+      h = canvasHeight;
    
       balk.style.left = w-25+"px"; //positie balk
       balk.style.top = (h/2)-50+"px";
@@ -107,6 +103,7 @@
             balk.snelheid.x = Math.round(event.gamma); //gamma is je mobiel kantelen via de breedte.
          } )
       }; 
+       
    update();
    }
 
@@ -132,15 +129,16 @@
         
     var socket = io.connect();
         
-    socket.on('canvas', function(ballArr){
+    socket.on('canvas', function(platformArr){
        
         theContext.clearRect(0,0,500,300);
         
-        for(var i=0;i<ballArr.length;i++){
-            var thisBall=ballArr[i];
-            init(thisBall);
-            console.log('>>>>', i, thisBall);
+        for(var i=0;i<platformArr.length;i++){
+            var thisPlatform=platformArr[i];
+            drawPlatform(thisPlatform);
+            console.log('>>>>', i, thisPlatform);
         }
+        
     socket.emit('movement', init)
         
     });
