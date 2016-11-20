@@ -1,0 +1,139 @@
+<doctype HTML></doctype>
+<html>
+<head></head>
+
+<style>
+    html, body {
+       width: 100%;
+       height: 100%;
+       margin: 0px;
+    }
+    
+    #mijnCanvasje{
+        border: 5px solid black;
+        background-color: black;
+    }
+    #balkRechts{
+   -webkit-transition: all;
+   transition: all;
+   position:absolute;
+   width:10px;
+   background: #fff;
+}
+#balkLinks{
+   -webkit-transition: all;
+   transition: all;
+   position:absolute;
+   width:10px;
+   background: #fff;
+}
+</style>
+
+<body>
+    <canvas id="mijnCanvasje" width="500" height="500" style="1px solid black"></canvas>
+    <div id="balkLinks"></div>
+    <div id="balkRechts"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+    function startDrawing (canvasId) {
+        var mijnCanvasje = document.getElementById(canvasId);
+        var drawingContext = mijnCanvasje.getContext('2d');
+        return drawingContext;
+    }  
+    
+    var theContext = startDrawing("mijnCanvasje");
+   
+
+    function drawBall(thisBall) {
+        theContext.beginPath();
+        theContext.rect(thisBall.x, thisBall.y, thisBall.width, thisBall.height);
+        theContext.fill('white');
+        theContext.closePath();
+    }
+       
+    var canvasWidth = window.innerWidth
+    var canvasHeight = window.innerHeight
+    var theContext = startDrawing("mijnCanvasje")
+    window.addEventListener('resize', resizeCanvas, false)
+    function resizeCanvas() {
+        mijnCanvasje.width = canvasWidth
+        mijnCanvasje.height = canvasHeight
+    }
+    resizeCanvas();
+        
+    var x = (canvasWidth/100)*25;  // houdt de veranderende horizontale positie bij
+    var y = (canvasHeight/2);  // houd de veranderende verticale positie bij
+    var frameTeller = 0;
+    var stapX = 0//(canvasWidth/100)*1;    // De X-as snelheid (in frames) per seconde
+    var stapY = 0//(canvasWidth/100)*1;    // De Y-as snelheid (in frames) per seconde
+    var straal = 10;  // De straal van de bal
+    var hoogtePlatform = (canvasHeight/100)*15;   // De hoogte van de platform (in pixels)
+    // var platform1X = (canvasWidth/100)*5    // Beginpositie X-as platform links
+    var platform1Y    // Beginpositie Y-as (niet ingesteld)
+    var onderkantPlatform1
+    var bovenkantPlatform1
+    var platform2X    // Beginpositie X-as platform rechts
+    var platform2Y     // Beginpositie Y-as platform rechts
+    var onderkantPlatform2
+    var bovenkantPlatform2
+    //-------------------------------------------------------------------------------//
+    var breedtePlatform = (canvasWidth/100)*15;   // De breedte van de platform (in pixels)
+    var platform3X    // Beginpositie X-as platform rechts
+    var platform3Y     // Beginpositie Y-as platform rechts
+    var onderkantPlatform3
+    var bovenkantPlatform3
+    var platform4X    // Beginpositie X-as platform rechts
+    var platform4Y     // Beginpositie Y-as platform rechts
+    var onderkantPlatform4
+    var bovenkantPlatform4
+    //-------------------------------------------------------------------------------//
+    var hitCounter = 0   // Variable die bijhoud hoe vaak de bal op het platform komt
+    var speler1Count = 0    // Variable die bijhoud hoe veel punten speler 1 heeft
+    var speler2Count = 0    // Variable die bijhoud hoe veel punten speler 2 heeft
+    var beginCount = 0
+
+   
+    function init(){
+        balkLinks = document.getElementById("balkLinks");  //Creëer variable van de linker balk
+        balkRechts = document.getElementById("balkRechts");   //Creëer variable van de rechter balk
+        //-------------------------------------------------------------------------------//
+        balkBoven = document.getElementById("balkBoven");   //Creëer variable van de rechter balk
+        balkOnder = document.getElementById("balkOnder");   //Creëer variable van de rechter balk
+        //-------------------------------------------------------------------------------//
+        w = canvasWidth;  //Breedte van het canvas
+        h = canvasHeight;    //Hoogte van het canvas
+
+        balkLinks.style.left = (w/100)*5+"px";    //Positie balkLinks
+        balkLinks.style.top = (h/2)+"px";
+        balkLinks.style.height = hoogtePlatform+"px";
+        balkLinks.snelheid = {x:0,y:0}
+        balkLinks.positie = {x:0,y:h/2}
+   
+        balkRechts.style.left = (w/100)*95+"px"; //positie balkRechts
+        balkRechts.style.top = (h/2)+"px";
+        balkRechts.style.height = hoogtePlatform+"px";
+        balkRechts.snelheid = {x:0,y:0}
+        balkRechts.positie = {x:0,y:h/2}
+        
+    }    
+        
+    var socket = io();
+        
+    socket.on('canvas', function(ballArr){
+       
+        theContext.clearRect(0,0,500,300);
+        
+        for(var i=0;i<ballArr.length;i++){
+            var thisBall=ballArr[i];
+            init(thisBall);
+            console.log('>>>>', i, thisBall);
+        }
+        
+    });
+  
+    
+      
+  </script>
+</body>
+</html>
