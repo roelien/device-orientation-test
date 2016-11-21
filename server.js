@@ -13,15 +13,15 @@ app.get('/', function(req, res){
 
 console.log('listening on *:'+ port);
 
-var platformArr=[
-    {
-        platformX:50,
-        platformY:50,
-        width: 20,
-        height: 100,    
-    },
-
-];
+//var platformArr=[
+//    {
+//        platformX:50,
+//        platformY:50,
+//        width: 20,
+//        height: 100,    
+//    },
+//
+//];
 
 
 //function moveBall(ball){
