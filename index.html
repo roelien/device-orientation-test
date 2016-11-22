@@ -85,13 +85,13 @@
       balk.positie = {x:480,y:100}
     
       if (window.DeviceOrientationEvent) {
-         window.addEventListener('orientation', function(event) {
+         window.addEventListener("deviceorientation", function(event) {
             balk.snelheid.y = Math.round(event.beta); //beta is je mobiel kantelen via de lengte.
             balk.snelheid.x = Math.round(event.gamma); //gamma is je mobiel kantelen via de breedte.
-         });
-        console.log(event);
-        socket.emit('orientation', event);
+            console.log(event);
+            socket.emit('orientation', event) 
             
+         });
       }; 
    update();
    }
