@@ -16,16 +16,16 @@ app.get('/', function(req, res){
 
 console.log('listening on *:'+ port);
 
-
-io.sockets.on('connection', function(socket){
-        
-    socket.on('orientation', function(data){
-        console.log('orientation changed', data);
-        socket.broadcast.emit('orientation', data);       
-        //paddle bewegen op de goede 
-    });
-        
-});
+//
+//io.sockets.on('connection', function(socket){
+//        
+//    socket.on('orientation', function(data){
+//        console.log('orientation changed', data);
+//        socket.broadcast.emit('orientation', data);       
+//        //paddle bewegen op de goede 
+//    });
+//        
+//});
 
 //
 //
@@ -42,3 +42,12 @@ io.sockets.on('connection', function(socket){
 //    
 //
 //}, 1000);
+
+
+io.sockets.on('connection', function (socket) {
+  // listen for device move
+  socket.on('devicemove', function (data) {
+    // on devicemove then move square
+    socket.broadcast.emit('movesquare', data);
+  });
+});

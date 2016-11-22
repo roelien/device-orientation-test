@@ -74,6 +74,15 @@
     var onderkantPlatform2
     var bovenkantPlatform2
   
+     function orientationRegistration (x, y){
+       var data = {
+           x: (Math.round(x)),
+           y: (Math.round(y)),
+       };
+       socket.emit('orientation', data);
+       init(data);
+   }
+
 
    function init(){
       balk = document.getElementById("balk");
@@ -87,11 +96,8 @@
     
       if (window.DeviceOrientationEvent) {
          window.addEventListener("deviceorientation", function(event) {
-            balk.snelheid.y = Math.round(event.beta); //beta is je mobiel kantelen via de lengte.
-            balk.snelheid.x = Math.round(event.gamma); //gamma is je mobiel kantelen via de breedte.
-            console.log(event);
-            socket.emit('orientation', event);
-            init(event);
+            balk.snelheid.y = event.beta; //beta is je mobiel kantelen via de lengte.
+            balk.snelheid.x = event.gamma; //gamma is je mobiel kantelen via de breedte.
          });
       }; 
    update();
@@ -114,8 +120,7 @@
        requestAnimationFrame( update );//KEEP ANIMATING
    }
 
-   
-
+  
    function maakSpel() {   // Het spel beginnen
       onderkantPlatform1 = platform1Y + hoogtePlatform   // Grootte platform links berekenen
       bovenkantPlatform1 = platform1Y
@@ -127,16 +132,13 @@
    }
 
      
-    socket.on('connection', function(){
-       
-        theContext.clearRect(0,0,canvasWidth,canvasHeight); 
-        
+    socket.on('connect', function(){
+               
         socket.on('orientation', function(data){
             init(data);
         });
+        
     });
-    
-   
     
 
 </script>
