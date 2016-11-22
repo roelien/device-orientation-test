@@ -27,13 +27,15 @@ setInterval( function() {
 //    }
 //    
 //    io.sockets.emit('canvas', platformArr);
-//    console.log (thisPlatform);
-//    
-    io.sockets.on("connection", function(socket){
+//    console.log (thisPlatform);    
+    io.sockets.on('connection', function(socket){
+        
     socket.on('orientation', function(data){
         console.log('orientation changed', data);
+        socket.emit('orientation', data);       
         //paddle bewegen op de goede 
     });
+        
 });
-    
+
 }, 1000);

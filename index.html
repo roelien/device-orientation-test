@@ -5,9 +5,7 @@
         style="border: 1px dotted black">
 </canvas>
 <div id="balk"></div>
-<div id="score">
-   Score speler 1: 0 <br> Score speler 2: 0
-</div>
+
 <style>
 #balk{
    -webkit-transition: all;
@@ -74,9 +72,7 @@
     var platform2Y     // Beginpositie Y-as platform rechts
     var onderkantPlatform2
     var bovenkantPlatform2
-    var hitCounter = 0   // Variable die bijhoud hoe vaak de bal op het platform komt
-    var speler1Count = 0    // Variable die bijhoud hoe veel punten speler 1 heeft
-    var speler2Count = 0    // Variable die bijhoud hoe veel punten speler 2 heeft
+  
 
    function init(){
       balk = document.getElementById("balk");
@@ -95,7 +91,7 @@
             console.log(event);
             socket.emit('orientation', event) 
             
-         } )
+         });
       }; 
    update();
    }
@@ -120,7 +116,6 @@
    
 
    function maakSpel() {   // Het spel beginnen
-      platform1Y = cursorY    // Y-as van de muis = Y-as van platform
       onderkantPlatform1 = platform1Y + hoogtePlatform   // Grootte platform links berekenen
       bovenkantPlatform1 = platform1Y
       bovenkantPlatform2 = balk.positie.y + 75
@@ -142,6 +137,7 @@
         for(var i=0;i<platformArr.length;i++){
             var thisPlatform=platformArr[i];
             drawPlatform(thisPlatform);
+            maakSpel();
             console.log('>>>>', i, thisPlatform);
         }
     });
