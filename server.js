@@ -32,7 +32,7 @@ setInterval( function() {
         
     socket.on('orientation', function(data){
         console.log('orientation changed', data);
-        socket.emit('orientation', data);       
+        socket.broadcast.emit('orientation', data);       
         //paddle bewegen op de goede 
     });
         
