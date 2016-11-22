@@ -130,16 +130,13 @@
    }
 
      
-    socket.on('canvas', function(platformArr){
+    socket.on('connection', function(){
        
         theContext.clearRect(0,0,canvasWidth,canvasHeight); 
         
-        for(var i=0;i<platformArr.length;i++){
-            var thisPlatform=platformArr[i];
-            drawPlatform(thisPlatform);
-            maakSpel();
-            console.log('>>>>', i, thisPlatform);
-        }
+        socket.on('orientation', function(data){
+            init(data);
+        });
     });
     
    
