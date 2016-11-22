@@ -33,21 +33,21 @@
        } )(); 
    }
 
-   function drawPlatform1(x, y) {   // Tekent het platform links
-      theContext.beginPath();
-      theContext.rect(platform1X, platform1Y, 10, hoogtePlatform)
-      theContext.closePath();
-      theContext.fill();
-      theContext.stroke();
-   }
-
-   function drawPlatform2(x, y) {   // Tekent het platform rechts
-      theContext.beginPath();
-      theContext.rect(platform2X, platform2Y, 10, hoogtePlatform)
-      theContext.closePath();
-      theContext.fill();
-      theContext.stroke();
-   }
+//   function drawPlatform1(x, y) {   // Tekent het platform links
+//      theContext.beginPath();
+//      theContext.rect(platform1X, platform1Y, 10, hoogtePlatform)
+//      theContext.closePath();
+//      theContext.fill();
+//      theContext.stroke();
+//   }
+//
+//   function drawPlatform2(x, y) {   // Tekent het platform rechts
+//      theContext.beginPath();
+//      theContext.rect(platform2X, platform2Y, 10, hoogtePlatform)
+//      theContext.closePath();
+//      theContext.fill();
+//      theContext.stroke();
+//   }
  
    function startDrawing(canvasId) {
       var canvasElement = document.getElementById(canvasId);
@@ -84,6 +84,15 @@
       balk.snelheid = {x:0,y:0}
       balk.positie = {x:480,y:100}
     
+      if (window.DeviceOrientationEvent) {
+         window.addEventListener('orientation', function(event) {
+            balk.snelheid.y = Math.round(event.beta); //beta is je mobiel kantelen via de lengte.
+            balk.snelheid.x = Math.round(event.gamma); //gamma is je mobiel kantelen via de breedte.
+         });
+        console.log(event);
+        socket.emit('orientation', event);
+            
+      }; 
    update();
    }
 
@@ -111,11 +120,7 @@
       bovenkantPlatform1 = platform1Y
       bovenkantPlatform2 = balk.positie.y + 75
       onderkantPlatform2 = balk.positie.y + 75 - hoogtePlatform
-      frameTeller++;
-   	x += stapX;
-   	y += stapY;
-   	theContext.clearRect(0,0,500,300);    // wis het canvas
-   	drawDisc( x, y, straal );
+
       drawPlatform1(100, 100)    // Teken linker platform op locatie 100, 100
       drawPlatform2(100, 100)    // Teken rechter platform op locatie 100, 100
    }
@@ -128,16 +133,6 @@
         socket.on('orientation', function(data){
             init(data);
         });
-        
-      if (window.DeviceOrientationEvent) {
-         window.addEventListener("deviceorientation", function(event) {
-            balk.snelheid.y = Math.round(event.beta); //beta is je mobiel kantelen via de lengte.
-            balk.snelheid.x = Math.round(event.gamma); //gamma is je mobiel kantelen via de breedte.
-            console.log(event);
-            socket.emit('orientation', event) 
-            
-         });
-      }; 
     });
     
    
