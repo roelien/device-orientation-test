@@ -1,8 +1,5 @@
 <html>
-<head>
-
-
-    
+<head>  
 </head>
     
 <style>
@@ -22,8 +19,9 @@
 <body onload='init()'>
 <canvas id="mijnCanvasje"
 </canvas>
-<div id="score">
-   Score speler 1: 0 <br> Score speler 2: 0
+<div id="balkLinks"></div>
+<div id="balkRechts"></div>
+
 </div>
 <style>
 html, body {
@@ -31,20 +29,13 @@ html, body {
    height: 100%;
    margin: 0px;
 }
-#balkRechts{
+#balkLinks, #balkRechts{
    -webkit-transition: all;
    transition: all;
    position:absolute;
-   width:10px;
    background: black;
 }
-#balkLinks{
-   -webkit-transition: all;
-   transition: all;
-   position:absolute;
-   width:10px;
-   background: black;
-}
+
 </style>
 
 <script src="/socket.io/socket.io.js"></script>
@@ -62,7 +53,8 @@ html, body {
            }; 
        } )(); 
    }
-   var socket = io();
+    
+    var socket = io();
     
     var canvasWidth = 1000;
     var canvasHeight = 600;
@@ -82,16 +74,37 @@ html, body {
     }
    
     var theContext = startDrawing("mijnCanvasje")
+    var x = 200;  // houdt de veranderende horizontale positie bij
+    var y = 300;  // houd de veranderende verticale positie bij
+    var frameTeller = 0;
+    var stapX = 0//(canvasWidth/100)*1;    // De X-as snelheid (in frames) per seconde
+    var stapY = 0//(canvasWidth/100)*1;    // De Y-as snelheid (in frames) per seconde
+    var straal = 10;  // De straal van de bal
+    var hoogtePlatform = 90;   // De hoogte van de platform (in pixels)
+    // var platform1X = (canvasWidth/100)*5    // Beginpositie X-as platform links
+    var platform1Y    // Beginpositie Y-as (niet ingesteld)
+    var onderkantPlatform1
+    var bovenkantPlatform1
+    var platform2X    // Beginpositie X-as platform rechts
+    var platform2Y     // Beginpositie Y-as platform rechts
+    var onderkantPlatform2
+    var bovenkantPlatform2
+    //-------------------------------------------------------------------------------//
+    var breedtePlatform = 150;   // De breedte van de platform (in pixels)
     
-    
-    function drawPlatform(thisPlatform){
+    function drawPlatform1(x, y) {   // Tekent het platform links
         theContext.beginPath();
-        theContext.rect(thisPlatform.platformX, thisPlatform.platformY, thisPlatform.width, thisPlatform.height)
+        theContext.rect(platform1X, platform1Y, 10, hoogtePlatform)
         theContext.closePath();
-        theContext.fill();
-        theContext.fillStyle='white';
         theContext.stroke();
     }
+    function drawPlatform2(x, y) {   // Tekent het platform rechts
+        theContext.beginPath();
+        theContext.rect(platform2X, platform2Y, 10, hoogtePlatform)
+        theContext.closePath();
+        theContext.stroke();
+    }
+    
     
     
     function update(){
@@ -118,9 +131,9 @@ html, body {
     }
     
     function init(data){
-        balkLinks = platformArr[0];
-        balkRechts = platformArr[1];
-        
+        balkLinks = document.getElementById("balkLinks");  //Creëer variable van de linker balk
+        balkRechts = document.getElementById("balkRechts");   //Creëer variable van de rechter balk
+     
         w = canvasWidth;
         h = canvasHeight;
         
