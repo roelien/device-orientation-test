@@ -17,18 +17,7 @@ app.get('/', function(req, res){
 console.log('listening on *:'+ port);
 
 
-
-setInterval( function() {
-    
-//    for(var i=0;i<platformArr.length; i++) {
-//        var thisPlatform=platformArr[i];
-//
-////        moveBall(thisBall);
-//    }
-//    
-//    io.sockets.emit('canvas', platformArr);
-//    console.log (thisPlatform);    
-    io.sockets.on('connection', function(socket){
+io.sockets.on('connection', function(socket){
         
     socket.on('orientation', function(data){
         console.log('orientation changed', data);
@@ -38,4 +27,18 @@ setInterval( function() {
         
 });
 
-}, 1000);
+//
+//
+//setInterval( function() {
+//    
+//    for(var i=0;i<platformArr.length; i++) {
+//        var thisPlatform=platformArr[i];
+//
+////        moveBall(thisBall);
+//    }
+//    
+//    io.sockets.emit('canvas', platformArr);
+//    console.log (thisPlatform);    
+//    
+//
+//}, 1000);

@@ -48,6 +48,7 @@
 //      theContext.fill();
 //      theContext.stroke();
 //   }
+    
  
    function startDrawing(canvasId) {
       var canvasElement = document.getElementById(canvasId);
@@ -89,8 +90,8 @@
             balk.snelheid.y = Math.round(event.beta); //beta is je mobiel kantelen via de lengte.
             balk.snelheid.x = Math.round(event.gamma); //gamma is je mobiel kantelen via de breedte.
             console.log(event);
-            socket.emit('orientation', event) 
-            
+            socket.emit('orientation', event);
+            init(event);
          });
       }; 
    update();
