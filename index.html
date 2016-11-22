@@ -1,11 +1,27 @@
 <html>
-<head><title>opdracht 16.4</title></head>
-<body onload="init()">
+<head>
+
+
+    
+</head>
+    
+<style>
+
+        html, body {
+       width: 100%;
+       height: 100%;
+       margin: 0px;
+    }
+    
+    #mijnCanvasje{
+        border: 5px solid black;
+        background-color: black;
+    }
+    
+</style>
+<body onload='init()'>
 <canvas id="mijnCanvasje"
-        style="border: 1px dotted black">
 </canvas>
-<div id="balkLinks"></div>
-<div id="balkRechts"></div>
 <div id="score">
    Score speler 1: 0 <br> Score speler 2: 0
 </div>
@@ -31,6 +47,8 @@ html, body {
 }
 </style>
 
+<script src="/socket.io/socket.io.js"></script>
+<script type="text/javascript" src="server.js"></script>
 <script>
    if ( !window.requestAnimationFrame ) { // Deze methode vertelt de browser dat je een animatie wilt uitvoeren
        window.requestAnimationFrame = ( function() {
@@ -44,150 +62,106 @@ html, body {
            }; 
        } )(); 
    }
-   
+   var socket = io();
+    
+    var canvasWidth = 1000;
+    var canvasHeight = 600;
+    var theContext = startDrawing("mijnCanvasje")
+    window.addEventListener('resize', resizeCanvas, false)
+    function resizeCanvas() {
+        mijnCanvasje.width = canvasWidth
+        mijnCanvasje.height = canvasHeight
+    }
+    resizeCanvas();
 
-   function drawPlatform1(x, y) {   // Tekent het platform links
-      theContext.beginPath();
-      theContext.rect(platformX, platformY, 10, hoogtePlatform)
-      theContext.closePath();
-      theContext.fill();
-      theContext.stroke();
-   }
-   function drawPlatform2(x, y) {   // Tekent het platform rechts
-      theContext.beginPath();
-      theContext.rect(platform2X, platform2Y, 10, hoogtePlatform)
-      theContext.closePath();
-      theContext.fill();
-      theContext.stroke();
-   }
  
-   function startDrawing(canvasId) {
+    function startDrawing(canvasId) {
       var canvasElement = document.getElementById(canvasId);
       var drawingContext = canvasElement.getContext("2d");
       return drawingContext;
-   }
+    }
    
-   var canvasWidth = window.innerWidth
-   var canvasHeight = window.innerHeight
-   var theContext = startDrawing("mijnCanvasje")
-   window.addEventListener('resize', resizeCanvas, false)
-   function resizeCanvas() {
-      mijnCanvasje.width = canvasWidth
-      mijnCanvasje.height = canvasHeight
-   }
-    resizeCanvas();
- 
-   var x = (canvasWidth/100)*25;  // houdt de veranderende horizontale positie bij
-   var y = (canvasHeight/2);  // houd de veranderende verticale positie bij
-   var frameTeller = 0;
-   var stapX = (canvasWidth/100)*1;    // De X-as snelheid (in frames) per seconde
-   var stapY = (canvasWidth/100)*1;    // De Y-as snelheid (in frames) per seconde
-   var straal = 10;  // De straal van de bal
-   var hoogtePlatform = (canvasHeight/100)*15;   // De hoogte van de platform (in pixels)
-   var platform1X = (canvasWidth/100)*5    // Beginpositie X-as platform links
-   var platform1Y    // Beginpositie Y-as (niet ingesteld)
-   var onderkantPlatform1
-   var bovenkantPlatform1
-   var platform2X    // Beginpositie X-as platform rechts
-   var platform2Y     // Beginpositie Y-as platform rechts
-   var onderkantPlatform2
-   var bovenkantPlatform2
-   var hitCounter = 0   // Variable die bijhoud hoe vaak de bal op het platform komt
-   var speler1Count = 0    // Variable die bijhoud hoe veel punten speler 1 heeft
-   var speler2Count = 0    // Variable die bijhoud hoe veel punten speler 2 heeft
+    var theContext = startDrawing("mijnCanvasje")
     
-   setInterval( maakSpel, 40 )   // 40 frames per seconde
+    
+    function drawPlatform(thisPlatform){
+        theContext.beginPath();
+        theContext.rect(thisPlatform.platformX, thisPlatform.platformY, thisPlatform.width, thisPlatform.height)
+        theContext.closePath();
+        theContext.fill();
+        theContext.fillStyle='white';
+        theContext.stroke();
+    }
+    
+    
+    function update(){
+        balkLinks.positie.y += (balkLinks.snelheid.y / 2);    //Verplaatsing van het linker platform
+        balkRechts.positie.y += (balkRechts.snelheid.y / 2);  //Verplaatsing van het rechter platform
+        //-------------------------------------------------------------------------------//
+        balkBoven.positie.x += (balkBoven.snelheid.x / 2);  //Verplaatsing van het bovenste platform
+        balkOnder.positie.x += (balkOnder.snelheid.x / 2);  //Verplaatsing van het onderste platform
+        //-------------------------------------------------------------------------------//
+        if (balkLinks.positie.y < 0 && balkLinks.snelheid.y < 0){   //bovenkant platform links
+            balkLinks.positie.y = 0;
+        }      
+        if (balkLinks.positie.y > canvasHeight - hoogtePlatform && balkLinks.snelheid.y > 0){  //onderkant platform links
+            balkLinks.positie.y = canvasHeight - hoogtePlatform;
+        }
+        if (balkRechts.positie.y < 0 && balkRechts.snelheid.y < 0){ //bovenkant platform rechts
+            balkRechts.positie.y = 0;
+        }
+        if (balkRechts.positie.y > canvasHeight - hoogtePlatform && balkRechts.snelheid.y > 0){ //onderkant platform rechts
+            balkRechts.positie.y = canvasHeight - hoogtePlatform;
+        }
+
+        requestAnimationFrame( update );    //KEEP ANIMATING
+    }
+    
+    function init(data){
+        balkLinks = platformArr[0];
+        balkRechts = platformArr[1];
+        
+        w = canvasWidth;
+        h = canvasHeight;
+        
+        balkLinks.style.left = 50 +"px";    //Positie balkLinks
+        balkLinks.style.top = 300 +"px";
+        balkLinks.style.height = hoogtePlatform+"px";
+        balkLinks.snelheid = {x:0,y:0}
+        balkLinks.positie = {x:0,y:300}
    
-   function init(){
-      balkLinks = document.getElementById("balkLinks");  //Creëer variable van de linker balk
-      balkRechts = document.getElementById("balkRechts");   //Creëer variable van de rechter balk
-      w = canvasWidth;  //Breedte van het canvas
-      h = canvasHeight;    //Hoogte van het canvas
-
-      balkLinks.style.left = (w/100)*5+"px";    //Positie balkLinks
-      balkLinks.style.top = (h/2)+"px";
-      balkLinks.style.height = hoogtePlatform+"px"
-      balkLinks.snelheid = {x:0,y:0}
-      balkLinks.positie = {x:0,y:h/2}
-   
-      balkRechts.style.left = (w/100)*95+"px"; //positie balkRechts
-      balkRechts.style.top = (h/2)+"px";
-      balkRechts.style.height = hoogtePlatform+"px"
-      balkRechts.snelheid = {x:0,y:0}
-      balkRechts.positie = {x:0,y:h/2}
-    
-      if (window.DeviceOrientationEvent) {
-         window.addEventListener("deviceorientation", function(event) {
-            balkLinks.snelheid.y = Math.round(event.beta);
-            balkLinks.snelheid.x = Math.round(event.gamma);
-            balkRechts.snelheid.y = Math.round(event.beta); //beta is je mobiel kantelen via de lengte.
-            balkRechts.snelheid.x = Math.round(event.gamma); //gamma is je mobiel kantelen via de breedte.
-         } )
-      }; 
-      update();
-   }
-
-   function update(){
-      balkLinks.positie.y += (balkLinks.snelheid.y / 2);    //Verplaatsing van het linker platform
-      balkRechts.positie.y += (balkRechts.snelheid.y / 2);  //Verplaatsing van het rechter platform
-      
-      if (balkLinks.positie.y < 0 && balkLinks.snelheid.y < 0){   //bovenkant platform links
-         balkLinks.positie.y = 0;
-      }      
-      if (balkLinks.positie.y > canvasHeight - hoogtePlatform && balkLinks.snelheid.y > 0){  //onderkant platform links
-         balkLinks.positie.y = canvasHeight - hoogtePlatform;
-      }
-
-      if (balkRechts.positie.y < 0 && balkRechts.snelheid.y < 0){ //bovenkant platform rechts
-         balkRechts.positie.y = 0;
-      }
-      if (balkRechts.positie.y > canvasHeight - hoogtePlatform && balkRechts.snelheid.y > 0){ //onderkant platform rechts
-         balkRechts.positie.y = canvasHeight - hoogtePlatform;
-      }
-
-      balkLinks.style.top = balkLinks.positie.y + "px"   //De positie bepalen van de linker balk
-      platform1X = balkLinks.positie.x + 75 
-      platform1Y = balkLinks.positie.y + 75
-
-      balkRechts.style.top = balkRechts.positie.y + "px"    //De positie bepalen van de rechter balk
-      platform2X = balkRechts.positie.x + 75
-      platform2Y = balkRechts.positie.y + 75
-       
-      requestAnimationFrame( update );    //KEEP ANIMATING
-   }
-
-   function maakSpel() {   // Het spel beginnen
-      onderkantPlatform1 = balkLinks.positie.y + 75 + hoogtePlatform   //Onderkant van het linker platform berekenen
-      bovenkantPlatform1 = balkLinks.positie.y + 75      //Bovenkant van het linker platform berekenen
-      bovenkantPlatform2 = balkRechts.positie.y + 75     //Bovenkant van het rechter platform berekenen
-      onderkantPlatform2 = balkRechts.positie.y + 75 + hoogtePlatform   //Onderkant van het rechter platform
-      frameTeller++;
-       
-      theContext.clearRect(0,0,canvasWidth,canvasHeight);    // wis het canvas
-       
-       
-   }
-    
-    
-
-//
-//        
-//    var socket = io.connect();
-//        
-//    socket.on('canvas', function(platformArr){
-//       
-//        theContext.clearRect(0,0,500,300);
-//        
-//        for(var i=0;i<platformArr.length;i++){
-//            var thisPlatform=platformArr[i];
-//            drawPlatform(thisPlatform);
-//            console.log('>>>>', i, thisPlatform);
-//        }
-//        
-//    socket.emit('movement', init)
-//        
-//    });
+        balkRechts.style.left = 950+"px"; //positie balkRechts
+        balkRechts.style.top = 300+"px";
+        balkRechts.style.height = hoogtePlatform+"px";
+        balkRechts.snelheid = {x:0,y:0}
+        balkRechts.positie = {x:0,y:300}
+        
+        if(window.DeviceOrientationEvent){
+            window.addEventListener("deviceorientation", function(event){
+                balkLinks.snelheid.y = Math.round(event.beta);
+                balkLinks.snelheid.x = Math.round(event.gamma);
+                balkRechts.snelheid.y = Math.round(event.beta); //beta is je mobiel kantelen via de lengte.
+                balkRechts.snelheid.x = Math.round(event.gamma); 
+                console.log(event);
+                socket.emit('orientation', event)
+            });
+        };
+        
+        update();
+    }
   
+    
+    socket.on('canvas', function(platformArr){
+       
+        theContext.clearRect(0,0,canvasWidth,canvasHeight); 
+        
+        for(var i=0;i<platformArr.length;i++){
+            var thisPlatform=platformArr[i];
+            drawPlatform(thisPlatform);
+            console.log('>>>>', i, thisPlatform);
+        }
+    });
+    
 </script>
 </body>
 </html>

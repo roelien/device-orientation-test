@@ -1,7 +1,10 @@
-var app = require('express')();
+var express = require('express');
+var app = express();
+app.use('/', express.static(__dirname + './index'));
 var http = require('http').Server(app);
 var port = process.env.PORT || 8080
 var io = require("socket.io").listen(app.listen(port));
+
 
 
 app.get('/', function(req, res){
@@ -13,13 +16,31 @@ app.get('/', function(req, res){
 
 console.log('listening on *:'+ port);
 
+
+var ballArr=[
+    {
+    x:100,
+    y:100,
+    r: 10,
+    stepX:5,
+    stepY:5,  
+    },
+];
+
+
 var platformArr=[
     {
         platformX:50,
         platformY:50,
         width: 20,
-        hoogthePlatform: 100,    
+        height: 100,    
     },
+    {
+        platformX: 250,
+        platformY: 50,
+        width: 20,
+        height: 100,
+    }
 
 ];
 
@@ -36,14 +57,23 @@ var platformArr=[
 //    }    
 //    return ball;
 //}
+io.sockets.on("connection", function(socket){
+    socket.on('orientation', function(data){
+        console.log('orientation changed', data);
+        //juiste paddle laten bewegen op de ontvangen data
+    });
+});
 
 setInterval( function() {
     
     for(var i=0;i<platformArr.length; i++) {
-        var thisBall=platformArr[i];
+        var thisPlatform=platformArr[i];
+
 //        moveBall(thisBall);
     }
     
     io.sockets.emit('canvas', platformArr);
-    console.log (platformArr);
+    console.log (thisPlatform);
+    
+    
 }, 1000);
