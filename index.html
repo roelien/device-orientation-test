@@ -19,9 +19,10 @@
 <body onload='init()'>
 <canvas id="mijnCanvasje"
 </canvas>
-<div id="balkLinks"></div>
-<div id="balkRechts"></div>
-
+       <div id="balkLinks"></div>
+    <div id="balkRechts"></div>
+<div id="score">
+   Score speler 1: 0 <br> Score speler 2: 0
 </div>
 <style>
 html, body {
@@ -29,13 +30,20 @@ html, body {
    height: 100%;
    margin: 0px;
 }
-#balkLinks, #balkRechts{
+#balkRechts{
    -webkit-transition: all;
    transition: all;
    position:absolute;
+   width:10px;
    background: black;
 }
-
+#balkLinks{
+   -webkit-transition: all;
+   transition: all;
+   position:absolute;
+   width:10px;
+   background: black;
+}
 </style>
 
 <script src="/socket.io/socket.io.js"></script>
@@ -73,7 +81,9 @@ html, body {
       return drawingContext;
     }
    
-    var theContext = startDrawing("mijnCanvasje")
+    var theContext = startDrawing("mijnCanvasje");
+    
+    
     var x = 200;  // houdt de veranderende horizontale positie bij
     var y = 300;  // houd de veranderende verticale positie bij
     var frameTeller = 0;
@@ -89,31 +99,23 @@ html, body {
     var platform2Y     // Beginpositie Y-as platform rechts
     var onderkantPlatform2
     var bovenkantPlatform2
-    //-------------------------------------------------------------------------------//
-    var breedtePlatform = 150;   // De breedte van de platform (in pixels)
     
-    function drawPlatform1(x, y) {   // Tekent het platform links
+    
+
+    
+    function drawPlatform(thisPlatform){
         theContext.beginPath();
-        theContext.rect(platform1X, platform1Y, 10, hoogtePlatform)
+        theContext.rect(thisPlatform.platformX, thisPlatform.platformY, thisPlatform.width, thisPlatform.height)
         theContext.closePath();
+        theContext.fill();
+        theContext.fillStyle='white';
         theContext.stroke();
     }
-    function drawPlatform2(x, y) {   // Tekent het platform rechts
-        theContext.beginPath();
-        theContext.rect(platform2X, platform2Y, 10, hoogtePlatform)
-        theContext.closePath();
-        theContext.stroke();
-    }
-    
     
     
     function update(){
         balkLinks.positie.y += (balkLinks.snelheid.y / 2);    //Verplaatsing van het linker platform
         balkRechts.positie.y += (balkRechts.snelheid.y / 2);  //Verplaatsing van het rechter platform
-        //-------------------------------------------------------------------------------//
-        balkBoven.positie.x += (balkBoven.snelheid.x / 2);  //Verplaatsing van het bovenste platform
-        balkOnder.positie.x += (balkOnder.snelheid.x / 2);  //Verplaatsing van het onderste platform
-        //-------------------------------------------------------------------------------//
         if (balkLinks.positie.y < 0 && balkLinks.snelheid.y < 0){   //bovenkant platform links
             balkLinks.positie.y = 0;
         }      
@@ -133,7 +135,7 @@ html, body {
     function init(data){
         balkLinks = document.getElementById("balkLinks");  //Creëer variable van de linker balk
         balkRechts = document.getElementById("balkRechts");   //Creëer variable van de rechter balk
-     
+    
         w = canvasWidth;
         h = canvasHeight;
         

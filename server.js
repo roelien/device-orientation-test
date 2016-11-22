@@ -28,6 +28,22 @@ var ballArr=[
 ];
 
 
+var platformArr=[
+    {
+        platformX:50,
+        platformY:50,
+        width: 20,
+        height: 100,    
+    },
+    {
+        platformX: 250,
+        platformY: 50,
+        width: 20,
+        height: 100,
+    }
+
+];
+
 
 //function moveBall(ball){
 //    ball.x += ball.stepX;
@@ -44,7 +60,7 @@ var ballArr=[
 io.sockets.on("connection", function(socket){
     socket.on('orientation', function(data){
         console.log('orientation changed', data);
-        //juiste paddle laten bewegen op de ontvangen data
+        //paddle bewegen op de goede 
     });
 });
 
